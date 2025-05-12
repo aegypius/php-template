@@ -6,6 +6,7 @@ on:
 
 jobs:
     coding-standards:
+        name: Coding Standards
         runs-on: ubuntu-latest
 
         permissions:
@@ -23,6 +24,7 @@ jobs:
                   args: check-coding-standards
 
     test:
+        name: Tests
         runs-on: ubuntu-latest
 
         permissions:
