@@ -20,6 +20,46 @@ use function Dagger\dag;
 #[Doc("PHP Code Quality functions")]
 class PhpProject
 {
+    private function php(
+        Directory $source,
+        string $image = "php",
+        string $variant = "cli",
+    ): Container {
+        global $version;
+
+        if (!isset($version)) {
+            $output = dag()
+                ->container()
+                ->from("composer:2")
+                ->withMountedDirectory("/app", $source)
+                ->withWorkdir("/app")
+                ->withExec([
+                    "composer",
+                    "show",
+                    "--platform",
+                    "php",
+                ])
+                ->stdout();
+
+            foreach (explode(PHP_EOL, $output) as $line) {
+                if (preg_match('/^versions\D+(?<version>(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)).*/xms', $line, $matches)) {
+                    $version = implode('.', [
+                        $matches['major'],
+                        $matches['minor'],
+                    ]);
+                }
+            }
+        }
+
+        return dag()
+            ->container()
+            ->from(match ($version ?? false) {
+                false => "{$image}:latest",
+                default => "{$image}:{$version}-{$variant}"
+            })
+        ;
+    }
+
     /**
      * Allows to install vendors with
      *
@@ -48,9 +88,7 @@ class PhpProject
         #[DefaultPath("."), Ignore("**/vendor", "docs")]
         Directory $source
     ): Container {
-        return dag()
-            ->container()
-            ->from("php:8.3-cli")
+        return $this->php(source: $source)
             ->withMountedDirectory("/app", $source)
             ->withDirectory("/app/vendor", $this->vendors($source))
             ->withWorkdir("/app")
@@ -74,9 +112,7 @@ class PhpProject
             $phpunit[] = "--testsuite={$testSuite}";
         }
 
-        return dag()
-            ->container()
-            ->from("php:8.3-cli")
+        return $this->php(source: $source)
             ->withMountedDirectory("/app", $source)
             ->withDirectory("/app/vendor", $this->vendors($source))
             ->withWorkdir("/app")
