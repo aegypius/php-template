@@ -47,6 +47,7 @@ class PhpProject
                         $matches['major'],
                         $matches['minor'],
                     ]);
+                    break;
                 }
             }
         }
@@ -54,7 +55,7 @@ class PhpProject
         return dag()
             ->container()
             ->from(match ($version ?? false) {
-                false => "{$image}:latest",
+                false => "{$image}:{$variant}",
                 default => "{$image}:{$version}-{$variant}"
             })
         ;

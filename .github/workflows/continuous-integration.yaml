@@ -3,6 +3,8 @@ on:
     push:
         branches:
             - main
+    pull_request:
+        branches: [ "main" ]
 
 jobs:
     coding-standards:
@@ -34,7 +36,7 @@ jobs:
             - name: Checkout
               uses: actions/checkout@v4
 
-            - name: Check for coding-standards
+            - name: Run tests
               uses: dagger/dagger-for-github@8.0.0
               with:
                   version: "latest"
