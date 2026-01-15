@@ -27,7 +27,7 @@ class PhpProject
         string $image = "php",
         string $variant = "cli",
     ): Container {
-        if (!isset(self::$version)) {
+        if (self::$version === null) {
             $output = dag()
                 ->container()
                 ->from("composer:2")
