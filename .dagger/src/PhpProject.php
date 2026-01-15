@@ -56,7 +56,7 @@ class PhpProject
             ->container()
             ->from(match (self::$version ?? false) {
                 false => "{$image}:{$variant}",
-                default => "{$image}:" . self::$version . "-{$variant}"
+                default => "{$image}:{self::$version}-{$variant}"
             })
         ;
     }
