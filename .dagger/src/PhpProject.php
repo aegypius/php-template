@@ -20,14 +20,14 @@ use function Dagger\dag;
 #[Doc("PHP Code Quality functions")]
 class PhpProject
 {
+    private static string|null $version = null;
+
     private function php(
         Directory $source,
         string $image = "php",
         string $variant = "cli",
     ): Container {
-        global $version;
-
-        if (!isset($version)) {
+        if (self::$version === null) {
             $output = dag()
                 ->container()
                 ->from("composer:2")
@@ -43,7 +43,7 @@ class PhpProject
 
             foreach (explode(PHP_EOL, $output) as $line) {
                 if (preg_match('/^versions\D+(?<version>(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)).*/xms', $line, $matches)) {
-                    $version = implode('.', [
+                    self::$version = implode('.', [
                         $matches['major'],
                         $matches['minor'],
                     ]);
@@ -54,9 +54,9 @@ class PhpProject
 
         return dag()
             ->container()
-            ->from(match ($version ?? false) {
-                false => "{$image}:{$variant}",
-                default => "{$image}:{$version}-{$variant}"
+            ->from(match (self::$version) {
+                null => "{$image}:{$variant}",
+                default => "{$image}:{self::$version}-{$variant}"
             })
         ;
     }
