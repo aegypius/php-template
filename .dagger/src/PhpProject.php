@@ -54,8 +54,8 @@ class PhpProject
 
         return dag()
             ->container()
-            ->from(match (self::$version ?? false) {
-                false => "{$image}:{$variant}",
+            ->from(match (self::$version) {
+                null => "{$image}:{$variant}",
                 default => "{$image}:{self::$version}-{$variant}"
             })
         ;
