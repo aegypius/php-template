@@ -25,9 +25,9 @@ class PhpProject
     /**
      * Create a PHP container with the appropriate PHP version.
      *
-     * This method extracts the PHP version from composer.json platform requirements
-     * and creates a container using the appropriate PHP image. The version is cached
-     * in a static property to avoid repeated lookups.
+     * This method detects the platform PHP version using Composer and creates a
+     * container using the appropriate PHP image. The version is cached in a static
+     * property to avoid repeated lookups.
      *
      * @param Directory $source The source directory containing composer.json
      * @param string $image The base PHP image name (default: "php")
