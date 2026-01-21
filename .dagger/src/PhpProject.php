@@ -22,6 +22,18 @@ class PhpProject
 {
     private static string|null $version = null;
 
+    /**
+     * Create a PHP container with the appropriate PHP version.
+     *
+     * This method detects the platform PHP version using Composer and creates a
+     * container using the appropriate PHP image. The version is cached in a static
+     * property to avoid repeated lookups.
+     *
+     * @param Directory $source The source directory containing composer.json
+     * @param string $image The base PHP image name (default: "php")
+     * @param string $variant The PHP image variant (default: "cli")
+     * @return Container A container with the appropriate PHP version installed
+     */
     private function php(
         Directory $source,
         string $image = "php",
