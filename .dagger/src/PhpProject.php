@@ -21,16 +21,16 @@ use function Dagger\dag;
 class PhpProject
 {
     /**
-     * Create a PHP container with the appropriate PHP version.
+     * Create a PHP container using the specified image and variant.
      *
-     * This method detects the platform PHP version using Composer and creates a
-     * container using the appropriate PHP image. The version is cached in a static
-     * property to avoid repeated lookups.
+     * This method constructs a container from the given PHP image name and
+     * variant. By default, it uses the "php:8.5-cli" image. It does not perform
+     * any automatic PHP version detection or caching.
      *
-     * @param Directory $source The source directory containing composer.json
+     * @param Directory $source The source directory (mounted into the container by callers)
      * @param string $image The base PHP image name (default: "php")
-     * @param string $variant The PHP image variant (default: "cli")
-     * @return Container A container with the appropriate PHP version installed
+     * @param string $variant The PHP image variant tag (default: "8.5-cli")
+     * @return Container A container based on the specified PHP image
      */
     private function php(
         Directory $source,
