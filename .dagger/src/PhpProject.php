@@ -20,8 +20,6 @@ use function Dagger\dag;
 #[Doc("PHP Code Quality functions")]
 class PhpProject
 {
-    private static string|null $version = null;
-
     /**
      * Create a PHP container with the appropriate PHP version.
      *
@@ -37,39 +35,11 @@ class PhpProject
     private function php(
         Directory $source,
         string $image = "php",
-        string $variant = "cli",
+        string $variant = "8.5-cli",
     ): Container {
-        if (self::$version === null) {
-            $output = dag()
-                ->container()
-                ->from("composer:2")
-                ->withMountedDirectory("/app", $source)
-                ->withWorkdir("/app")
-                ->withExec([
-                    "composer",
-                    "show",
-                    "--platform",
-                    "php",
-                ])
-                ->stdout();
-
-            foreach (explode(PHP_EOL, $output) as $line) {
-                if (preg_match('/^versions\D+(?<version>(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)).*/xms', $line, $matches)) {
-                    self::$version = implode('.', [
-                        $matches['major'],
-                        $matches['minor'],
-                    ]);
-                    break;
-                }
-            }
-        }
-
         return dag()
             ->container()
-            ->from(match (self::$version) {
-                null => "{$image}:{$variant}",
-                default => "{$image}:{self::$version}-{$variant}"
-            })
+            ->from("{$image}:{$variant}")
         ;
     }
 
