@@ -21,6 +21,27 @@ use function Dagger\dag;
 class PhpProject
 {
     /**
+     * Create a PHP container using the specified image and variant.
+     *
+     * This method constructs a container from the given PHP image name and
+     * variant. By default, it uses the "php:8.5-cli" image. It does not perform
+     * any automatic PHP version detection or caching.
+     *
+     * @param string $image The base PHP image name (default: "php")
+     * @param string $variant The PHP image variant tag (default: "8.5-cli")
+     * @return Container A container based on the specified PHP image
+     */
+    private function php(
+        string $image = "php",
+        string $variant = "8.5-cli",
+    ): Container {
+        return dag()
+            ->container()
+            ->from("{$image}:{$variant}")
+        ;
+    }
+
+    /**
      * Allows to install vendors with
      *
      * @throws CompileError
@@ -48,9 +69,7 @@ class PhpProject
         #[DefaultPath("."), Ignore("**/vendor", "docs")]
         Directory $source
     ): Container {
-        return dag()
-            ->container()
-            ->from("php:8.3-cli")
+        return $this->php()
             ->withMountedDirectory("/app", $source)
             ->withDirectory("/app/vendor", $this->vendors($source))
             ->withWorkdir("/app")
@@ -74,9 +93,7 @@ class PhpProject
             $phpunit[] = "--testsuite={$testSuite}";
         }
 
-        return dag()
-            ->container()
-            ->from("php:8.3-cli")
+        return $this->php()
             ->withMountedDirectory("/app", $source)
             ->withDirectory("/app/vendor", $this->vendors($source))
             ->withWorkdir("/app")
